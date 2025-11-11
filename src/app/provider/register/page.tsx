@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 
 export default function ProviderRegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1: Personal/Company Info
@@ -61,6 +63,8 @@ export default function ProviderRegisterPage() {
     } else if (step === 4 && Object.keys(newErrors).length === 0) {
       // Submit form
       console.log('Provider Registration:', formData);
+      // Redirect to provider dashboard after registration
+      router.push('/provider/dashboard');
     }
   };
 
