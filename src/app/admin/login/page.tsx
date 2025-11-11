@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -28,6 +30,8 @@ export default function AdminLoginPage() {
     if (Object.keys(newErrors).length === 0) {
       // Handle admin login logic here
       console.log('Admin Login:', formData);
+      // Redirect to admin dashboard
+      router.push('/admin/dashboard');
     }
   };
 
