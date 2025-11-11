@@ -7,9 +7,16 @@ interface CardProps {
   className?: string;
   hover?: boolean;
   variant?: 'default' | 'dark';
+  style?: React.CSSProperties;
 }
 
-export default function Card({ children, className = '', hover = false, variant = 'default' }: CardProps) {
+export default function Card({
+  children,
+  className = '',
+  hover = false,
+  variant = 'default',
+  style = {},
+}: CardProps) {
   const isDark = variant === 'dark';
   
   const baseStyle: React.CSSProperties = isDark ? {
@@ -48,18 +55,23 @@ export default function Card({ children, className = '', hover = false, variant 
     cursor: 'pointer',
   }) : {};
 
+  const combinedBaseStyle: React.CSSProperties = {
+    ...baseStyle,
+    ...style,
+  };
+
   return (
     <div
       className={className}
       style={{
-        ...baseStyle,
+        ...combinedBaseStyle,
         willChange: hover ? 'transform, box-shadow' : 'auto',
       }}
       onMouseEnter={hover ? (e) => {
-        Object.assign(e.currentTarget.style, baseStyle, hoverStyle);
+        Object.assign(e.currentTarget.style, combinedBaseStyle, hoverStyle);
       } : undefined}
       onMouseLeave={hover ? (e) => {
-        Object.assign(e.currentTarget.style, baseStyle);
+        Object.assign(e.currentTarget.style, combinedBaseStyle);
       } : undefined}
     >
       {/* Premium gradient overlay */}
