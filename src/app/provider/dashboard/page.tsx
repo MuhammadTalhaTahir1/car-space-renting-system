@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { AuthGuard } from '@/components/AuthGuard';
+import { useProviderProfile } from '@/features/provider/hooks';
+import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
+import { useLogout } from '@/features/auth/hooks';
 
 // Mock data for provider dashboard
 const stats = {
@@ -51,11 +54,32 @@ const quickActions = [
 ];
 
 export default function ProviderDashboard() {
-  const [accountStatus, setAccountStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const router = useRouter();
+  const { data, isLoading, isError } = useProviderProfile();
+  const logoutMutation = useLogout();
+  const profileStatus = data?.profile.status;
 
   return (
     <AuthGuard allowedRoles={['provider']}>
-      <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Loading your provider account...
+        </div>
+      ) : isError || !profileStatus ? (
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Unable to load provider profile. Please try again later.
+        </div>
+      ) : profileStatus !== 'approved' ? (
+        <ProviderPendingNotice
+          onLogout={() =>
+            logoutMutation.mutate(undefined, {
+              onSuccess: () => router.push('/'),
+            })
+          }
+          isLoggingOut={logoutMutation.isPending}
+        />
+      ) : (
+        <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
       {/* Header Section */}
       <div className="mb-8 sm:mb-12">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -68,16 +92,9 @@ export default function ProviderDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {accountStatus === 'pending' && (
-              <div className="px-4 py-2 rounded-lg bg-yellow-500/20 border border-yellow-400/30">
-                <span className="text-yellow-400 text-sm font-semibold">⏳ Pending Approval</span>
-              </div>
-            )}
-            {accountStatus === 'approved' && (
-              <div className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30">
-                <span className="text-green-400 text-sm font-semibold">✅ Approved</span>
-              </div>
-            )}
+            <div className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30">
+              <span className="text-green-400 text-sm font-semibold">✅ Approved</span>
+            </div>
             <Link href="/provider/profile">
               <Button variant="outline" size="sm">
                 View Profile
@@ -88,21 +105,7 @@ export default function ProviderDashboard() {
       </div>
 
       {/* Account Status Banner */}
-      {accountStatus === 'pending' && (
-        <Card className="p-6 mb-8" style={{ borderColor: 'rgba(251, 191, 36, 0.3)' }}>
-          <div className="flex items-start gap-4">
-            <div className="text-3xl">⚠️</div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-white mb-2">Account Pending Approval</h3>
-              <p className="text-sm text-white/70 leading-relaxed">
-                Your provider account is currently under review. You'll receive an email notification once your account has been approved by an administrator. 
-                In the meantime, you can complete your profile and prepare your parking space listings.
-              </p>
-            </div>
-          </div>
-        </Card>
-      )}
-
+      {/* Account Status Banner removed for approved */}
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6 mb-8 sm:mb-12">
         <Card hover className="p-4 sm:p-6">
@@ -262,10 +265,10 @@ export default function ProviderDashboard() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-white">Account Verification</span>
-                <span className="text-xs text-white bg-yellow-500/20 px-2 py-1 rounded">Pending</span>
+                <span className="text-xs text-white bg-green-500/20 px-2 py-1 rounded">Approved</span>
               </div>
               <p className="text-xs text-white/60 mt-2">
-                Your account is awaiting admin approval. Complete your profile to speed up the process.
+                Your documents are verified and you&apos;re ready to accept bookings.
               </p>
             </div>
 
@@ -311,8 +314,9 @@ export default function ProviderDashboard() {
             </div>
           </div>
         </Card>
+        </div>
       </div>
-      </div>
+      )}
     </AuthGuard>
   );
 }

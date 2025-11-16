@@ -2,12 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { AuthGuard } from '@/components/AuthGuard';
+import { useProviderProfile } from '@/features/provider/hooks';
+import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
+import { useLogout } from '@/features/auth/hooks';
 
 export default function ProviderProfilePage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     companyName: 'ABC Parking Inc.',
     contactName: 'John Doe',
@@ -23,6 +28,44 @@ export default function ProviderProfilePage() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const { data, isLoading, isError } = useProviderProfile();
+  const logoutMutation = useLogout();
+  const status = data?.profile.status;
+
+  if (isLoading) {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Loading provider profile...
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  if (isError || !status) {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Unable to load provider profile. Please try again later.
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  if (status !== 'approved') {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <ProviderPendingNotice
+          onLogout={() =>
+            logoutMutation.mutate(undefined, {
+              onSuccess: () => router.push('/'),
+            })
+          }
+          isLoggingOut={logoutMutation.isPending}
+        />
+      </AuthGuard>
+    );
+  }
 
   return (
     <AuthGuard allowedRoles={['provider']}>
@@ -50,19 +93,19 @@ export default function ProviderProfilePage() {
       </div>
 
       {/* Account Status */}
-      <Card className="p-6 mb-8" style={{ borderColor: 'rgba(251, 191, 36, 0.3)' }}>
+      <Card className="p-6 mb-8" style={{ borderColor: 'rgba(34, 197, 94, 0.3)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="text-3xl">⏳</div>
+            <div className="text-3xl">✅</div>
             <div>
-              <h3 className="text-lg font-bold text-white mb-1">Account Status: Pending Approval</h3>
+              <h3 className="text-lg font-bold text-white mb-1">Account Status: Approved</h3>
               <p className="text-sm text-white/70">
-                Your provider account is currently under review. Complete your profile to speed up the approval process.
+                Your provider account is active. You can now manage listings, bookings, and payouts from your dashboard.
               </p>
             </div>
           </div>
-          <div className="px-4 py-2 rounded-lg bg-yellow-500/20 border border-yellow-400/30">
-            <span className="text-yellow-400 text-sm font-semibold">Pending</span>
+          <div className="px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30">
+            <span className="text-green-400 text-sm font-semibold">Approved</span>
           </div>
         </div>
       </Card>
@@ -263,7 +306,7 @@ export default function ProviderProfilePage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-white/70">Account Status</span>
-                <span className="text-yellow-400">Pending</span>
+                <span className="text-green-400">Approved</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/70">Member Since</span>

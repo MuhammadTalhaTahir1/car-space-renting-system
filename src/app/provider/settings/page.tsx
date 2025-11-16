@@ -2,10 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { AuthGuard } from '@/components/AuthGuard';
+import { useProviderProfile } from '@/features/provider/hooks';
+import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
+import { useLogout } from '@/features/auth/hooks';
 
 export default function ProviderSettingsPage() {
   const [settings, setSettings] = useState({
@@ -24,6 +28,43 @@ export default function ProviderSettingsPage() {
     newPassword: '',
     confirmPassword: '',
   });
+  const router = useRouter();
+  const { data, isLoading, isError } = useProviderProfile();
+  const logoutMutation = useLogout();
+  const status = data?.profile.status;
+
+  if (isLoading) {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Loading provider settings...
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  if (isError || !status) {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Unable to load provider profile. Please try again later.
+        </div>
+      </AuthGuard>
+    );
+  }
+
+  if (status !== 'approved') {
+    return (
+      <AuthGuard allowedRoles={['provider']}>
+        <ProviderPendingNotice
+          onLogout={() =>
+            logoutMutation.mutate(undefined, { onSuccess: () => router.push('/') })
+          }
+          isLoggingOut={logoutMutation.isPending}
+        />
+      </AuthGuard>
+    );
+  }
 
   return (
     <AuthGuard allowedRoles={['provider']}>
@@ -205,7 +246,7 @@ export default function ProviderSettingsPage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-white/70">Account Status</span>
-                <span className="text-yellow-400">Pending</span>
+                <span className="text-green-400">Approved</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/70">Member Since</span>
@@ -239,8 +280,8 @@ export default function ProviderSettingsPage() {
           </Card>
         </div>
       </div>
-      </div>
-    </AuthGuard>
-  );
+    </div>
+  </AuthGuard>
+);
 }
 

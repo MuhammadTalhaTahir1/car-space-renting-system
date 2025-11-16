@@ -2,10 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { AuthGuard } from '@/components/AuthGuard';
+import { useProviderProfile } from '@/features/provider/hooks';
+import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
+import { useLogout } from '@/features/auth/hooks';
 
 export default function NewSpacePage() {
   const [formData, setFormData] = useState({
@@ -22,6 +26,10 @@ export default function NewSpacePage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
+  const { data, isLoading, isError } = useProviderProfile();
+  const logoutMutation = useLogout();
+  const status = data?.profile.status;
 
   const amenitiesOptions = [
     'Covered',
@@ -61,6 +69,22 @@ export default function NewSpacePage() {
 
   return (
     <AuthGuard allowedRoles={['provider']}>
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Loading provider profile...
+        </div>
+      ) : isError || !status ? (
+        <div className="min-h-screen flex items-center justify-center text-white/80">
+          Unable to load provider profile. Please try again later.
+        </div>
+      ) : status !== 'approved' ? (
+        <ProviderPendingNotice
+          onLogout={() =>
+            logoutMutation.mutate(undefined, { onSuccess: () => router.push('/') })
+          }
+          isLoggingOut={logoutMutation.isPending}
+        />
+      ) : (
       <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
       <div className="mb-8 sm:mb-12">
         <Link href="/provider/spaces" className="inline-flex items-center text-blue-300 hover:text-blue-400 mb-4 transition-colors">
@@ -261,6 +285,7 @@ export default function NewSpacePage() {
         </div>
       </form>
       </div>
+      )}
     </AuthGuard>
   );
 }
