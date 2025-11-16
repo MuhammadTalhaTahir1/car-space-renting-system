@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { useLogin } from '@/features/auth/hooks';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +14,9 @@ export default function LoginPage() {
     password: '',
   });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+  const router = useRouter();
+  const loginMutation = useLogin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,8 +31,27 @@ export default function LoginPage() {
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      // Handle login logic here
-      console.log('Login:', formData);
+      setGeneralError(null);
+      loginMutation.mutate(
+        {
+          email: formData.email.trim(),
+          password: formData.password,
+        },
+        {
+          onSuccess: (data) => {
+            if (data.user.role === 'admin') {
+              router.push('/admin/dashboard');
+            } else if (data.user.role === 'provider') {
+              router.push('/provider/dashboard');
+            } else {
+              router.push('/');
+            }
+          },
+          onError: (error) => {
+            setGeneralError(error instanceof Error ? error.message : 'Login failed');
+          },
+        },
+      );
     }
   };
 
@@ -43,6 +67,11 @@ export default function LoginPage() {
 
         <Card className="p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {generalError && (
+              <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {generalError}
+              </div>
+            )}
             <Input
               label="Email Address"
               type="email"
@@ -77,8 +106,14 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <Button type="submit" fullWidth size="lg" className="mt-4">
-              Sign In
+            <Button
+              type="submit"
+              fullWidth
+              size="lg"
+              className="mt-4"
+              disabled={loginMutation.isPending}
+            >
+              {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
 

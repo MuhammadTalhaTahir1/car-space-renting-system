@@ -1,12 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useCurrentUser, useLogout } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  useCurrentUser();
+  const { user, isAuthenticated } = useAuthStore();
+  const logoutMutation = useLogout();
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -15,6 +21,23 @@ export default function Navigation() {
   ];
 
   const isActive = (path: string) => pathname === path;
+  const profileHref =
+    user?.role === 'admin'
+      ? '/admin/dashboard'
+      : user?.role === 'provider'
+      ? '/provider/profile'
+      : '/profile';
+
+  const profileLabel = user?.role === 'admin' ? 'Admin' : 'Profile';
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        setIsMenuOpen(false);
+        router.push('/');
+      },
+    });
+  };
 
   return (
     <header className="w-full sticky top-0 z-50">
@@ -67,36 +90,62 @@ export default function Navigation() {
                 </Link>
               ))}
               <div className="mx-2 h-6 w-px bg-white-30" />
-              <Link
-                href="/login"
-                className="px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.2) 100%)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%)';
-                }}
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className="px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(13, 148, 136, 0.95) 0%, rgba(15, 118, 110, 0.9) 100%)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)';
-                }}
-              >
-                Sign Up
-              </Link>
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.2) 100%)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%)';
+                    }}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(13, 148, 136, 0.95) 0%, rgba(15, 118, 110, 0.9) 100%)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)';
+                    }}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={profileHref}
+                    className="px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.3) 100%)',
+                    }}
+                  >
+                    {profileLabel}
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    disabled={logoutMutation.isPending}
+                    className="px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300 border border-white/30 hover:border-white/60 disabled:opacity-60"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                    }}
+                  >
+                    {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -154,38 +203,53 @@ export default function Navigation() {
                 </Link>
               ))}
               <div className="pt-4 space-y-3 border-t border-white-20 mt-4">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300 text-center"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.5) 0%, rgba(168, 85, 247, 0.4) 100%)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(168, 85, 247, 0.7) 100%)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(147, 51, 234, 0.5) 0%, rgba(168, 85, 247, 0.4) 100%)';
-                  }}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300 text-center"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(13, 148, 136, 0.95) 0%, rgba(15, 118, 110, 0.9) 100%)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)';
-                  }}
-                >
-                  Sign Up
-                </Link>
+                {!isAuthenticated ? (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300 text-center"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.5) 0%, rgba(168, 85, 247, 0.4) 100%)',
+                      }}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300 text-center"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(13, 148, 136, 0.8) 100%)',
+                      }}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={profileHref}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block px-5 py-2-5 rounded-lg text-sm font-semibold text-white shadow-md transition-all duration-300 text-center"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.3) 100%)',
+                      }}
+                    >
+                      {profileLabel}
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      disabled={logoutMutation.isPending}
+                      className="w-full px-5 py-2-5 rounded-lg text-sm font-medium text-white transition-all duration-300 border border-white/30 hover:border-white/60 disabled:opacity-60"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                      }}
+                    >
+                      {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
