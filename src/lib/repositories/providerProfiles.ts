@@ -30,6 +30,11 @@ export async function findProviderProfileByUserId(userId: ObjectId): Promise<Wit
   return db.collection<ProviderProfile>(COLLECTION).findOne({ userId });
 }
 
+export async function listProviderProfilesByStatus(status: ProviderStatus): Promise<WithId<ProviderProfile>[]> {
+  const db = await getDb();
+  return db.collection<ProviderProfile>(COLLECTION).find({ status }).sort({ createdAt: 1 }).toArray();
+}
+
 export async function createProviderProfile(profile: Omit<ProviderProfile, "_id" | "createdAt" | "updatedAt">): Promise<WithId<ProviderProfile>> {
   const db = await getDb();
   const now = new Date();
