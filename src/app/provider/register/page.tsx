@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { useRegister } from '@/features/auth/hooks';
 
 export default function ProviderRegisterPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function ProviderRegisterPage() {
     city: '',
     state: '',
     zipCode: '',
-    businessType: 'individual', // individual or company
+    businessType: 'company', // individual or company
     // Step 3: Payment Details
     bankAccount: '',
     taxId: '',
@@ -30,11 +31,13 @@ export default function ProviderRegisterPage() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+  const registerMutation = useRegister();
 
   const handleNext = () => {
     // Validate current step
     const newErrors: Record<string, string> = {};
-    
+
     if (step === 1) {
       if (!formData.companyName) newErrors.companyName = 'Company/Name is required';
       if (!formData.contactName) newErrors.contactName = 'Contact name is required';
@@ -55,16 +58,42 @@ export default function ProviderRegisterPage() {
         newErrors.confirmPassword = 'Passwords do not match';
       }
     }
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0 && step < 4) {
       setStep(step + 1);
     } else if (step === 4 && Object.keys(newErrors).length === 0) {
-      // Submit form
-      console.log('Provider Registration:', formData);
-      // Redirect to provider dashboard after registration
-      router.push('/provider/dashboard');
+      setGeneralError(null);
+      registerMutation.mutate(
+        {
+          fullName: formData.companyName.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          phone: formData.phone.trim(),
+          role: 'provider',
+          providerProfile: {
+            businessName: formData.companyName.trim(),
+            contactName: formData.contactName.trim(),
+            phone: formData.phone.trim(),
+            address: formData.address.trim(),
+            city: formData.city.trim(),
+            state: formData.state.trim(),
+            zipCode: formData.zipCode.trim(),
+            taxId: formData.taxId.trim(),
+            bankAccount: formData.bankAccount.replace(/\s+/g, ''),
+            businessType: formData.businessType as 'individual' | 'company',
+          },
+        },
+        {
+          onSuccess: () => {
+            router.push('/provider/dashboard');
+          },
+          onError: (error) => {
+            setGeneralError(error instanceof Error ? error.message : 'Registration failed');
+          },
+        },
+      );
     }
   };
 
@@ -112,12 +141,17 @@ export default function ProviderRegisterPage() {
         </div>
 
         <Card className="p-14 sm:p-16 lg:p-20">
+          {generalError && (
+            <div className="mb-8 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {generalError}
+            </div>
+          )}
           {/* Step 1: Company/Personal Info */}
           {step === 1 && (
             <div className="space-y-12">
               <h2 className="text-4xl font-bold text-white mb-12">Company Information</h2>
               
-              <div>
+              {/* <div>
                 <label className="block text-white/95 text-base font-semibold mb-10 tracking-wide">
                   Account Type
                 </label>
@@ -147,7 +181,7 @@ export default function ProviderRegisterPage() {
                     <div className="font-bold text-xl">Company</div>
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <Input
                 label={formData.businessType === 'company' ? 'Company Name' : 'Full Name'}
@@ -290,7 +324,10 @@ export default function ProviderRegisterPage() {
               <div className="bg-yellow-500/20 border-2 border-yellow-400/30 rounded-2xl p-8 backdrop-blur-sm">
                 <p className="text-white/90 text-lg leading-relaxed flex items-start gap-4">
                   <span className="text-3xl">⚠️</span>
-                  <span>Your account will be pending admin approval. You'll receive an email once your account is verified.</span>
+                  <span>
+                    Your account will be pending admin approval. You&apos;ll receive an email once your
+                    account is verified.
+                  </span>
                 </p>
               </div>
             </div>
@@ -312,7 +349,11 @@ export default function ProviderRegisterPage() {
               onClick={handleNext}
               className="min-w-[180px]"
             >
-              {step === 4 ? 'Submit' : 'Next →'}
+              {registerMutation.isPending
+                ? "Submitting..."
+                : step === 4
+                ? "Submit"
+                : "Next →"}
             </Button>
           </div>
 
