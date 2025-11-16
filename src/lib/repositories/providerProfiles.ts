@@ -16,6 +16,7 @@ export interface ProviderProfile {
   payoutMethod?: string;
   bankAccountLast4?: string;
   taxId?: string;
+  businessType?: "individual" | "company";
   status: ProviderStatus;
   verificationNotes?: string;
   createdAt: Date;

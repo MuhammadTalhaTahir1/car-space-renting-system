@@ -13,12 +13,26 @@ import {
   ensureProviderProfileIndexes,
 } from "@/lib/repositories/providerProfiles";
 
+type ProviderProfileInput = {
+  businessName?: string;
+  contactName?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  taxId?: string;
+  bankAccount?: string;
+  businessType?: "individual" | "company";
+};
+
 type RegisterBody = {
   fullName?: string;
   email?: string;
   password?: string;
   role?: UserRole;
   phone?: string;
+  providerProfile?: ProviderProfileInput;
 };
 
 const ALLOWED_ROLES: UserRole[] = ["consumer", "provider"];
@@ -31,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { fullName, email, password, role, phone } = payload;
+  const { fullName, email, password, role, phone, providerProfile } = payload;
 
   if (!fullName || !email || !password || !role) {
     return NextResponse.json(
@@ -99,10 +113,30 @@ export async function POST(request: Request) {
 
     if (role === "provider") {
       await ensureProviderProfileIndexes();
+      const businessName = providerProfile?.businessName?.trim() || trimmedName;
+      const contactName = providerProfile?.contactName?.trim() || trimmedName;
+      const providerPhone =
+        providerProfile?.phone?.trim() || sanitizedPhone || undefined;
+      const address = providerProfile?.address?.trim();
+      const city = providerProfile?.city?.trim();
+      const state = providerProfile?.state?.trim();
+      const zipCode = providerProfile?.zipCode?.trim();
+      const taxId = providerProfile?.taxId?.trim();
+      const bankAccount = providerProfile?.bankAccount?.replace(/\s+/g, "");
+      const bankAccountLast4 = bankAccount ? bankAccount.slice(-4) : undefined;
+
       await createProviderProfile({
         userId: createdUser._id,
-        contactName: trimmedName,
-        phone: sanitizedPhone,
+        businessName,
+        contactName,
+        phone: providerPhone,
+        address,
+        city,
+        state,
+        zipCode,
+        taxId,
+        bankAccountLast4,
+        businessType: providerProfile?.businessType,
         status: "pending",
       });
     }

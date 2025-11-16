@@ -12,12 +12,26 @@ export type AuthUser = {
   createdAt: string;
 };
 
+export type ProviderProfilePayload = {
+  businessName?: string;
+  contactName?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  taxId?: string;
+  bankAccount?: string;
+  businessType?: "individual" | "company";
+};
+
 type RegisterPayload = {
   fullName: string;
   email: string;
   password: string;
   role: "consumer" | "provider";
   phone?: string;
+  providerProfile?: ProviderProfilePayload;
 };
 
 type RegisterResponse = {
