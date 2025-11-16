@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,9 +43,11 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <Navigation />
-        {children}
-        <Footer />
+        <ReactQueryProvider>
+          <Navigation />
+          {children}
+          <Footer />
+        </ReactQueryProvider>
       </body>
     </html>
   );
