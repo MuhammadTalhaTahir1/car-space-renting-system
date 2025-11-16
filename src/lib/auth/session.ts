@@ -7,8 +7,7 @@ export function createSessionResponse(
   payload: Record<string, unknown>,
   init?: ResponseInit,
 ): NextResponse {
-  const cookieValue = encodeURIComponent(JSON.stringify(payload));
-  const cookie = serialize(SESSION_COOKIE, cookieValue, {
+  const cookie = serialize(SESSION_COOKIE, JSON.stringify(payload), {
     httpOnly: true,
     path: "/",
     sameSite: "lax",
