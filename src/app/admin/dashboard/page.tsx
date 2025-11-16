@@ -130,12 +130,14 @@ export default function AdminDashboard() {
         </Card>
 
         <Card hover className="p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl sm:text-3xl">⏳</div>
-            <div className="text-xs sm:text-sm text-white/60">Pending</div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stats.pendingApprovals}</div>
-          <div className="text-xs text-yellow-400">Requires attention</div>
+          <Link href="/admin/providers/pending" className="block">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-2xl sm:text-3xl">⏳</div>
+              <div className="text-xs sm:text-sm text-white/60">Pending</div>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stats.pendingApprovals}</div>
+            <div className="text-xs text-yellow-400">Requires attention</div>
+          </Link>
         </Card>
 
         <Card hover className="p-4 sm:p-6">
