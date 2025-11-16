@@ -3,35 +3,60 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { useLogin, useLogout } from '@/features/auth/hooks';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+
+  const loginMutation = useLogin();
+  const logoutMutation = useLogout();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validation
-    const newErrors: { username?: string; password?: string } = {};
-    if (!formData.username) {
-      newErrors.username = 'Username is required';
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
     }
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
-      // Handle admin login logic here
-      console.log('Admin Login:', formData);
-      // Redirect to admin dashboard
-      router.push('/admin/dashboard');
+      setGeneralError(null);
+      loginMutation.mutate(
+        {
+          email: formData.email.trim(),
+          password: formData.password,
+        },
+        {
+          onSuccess: (data) => {
+            if (data.user.role === 'admin') {
+              router.push('/admin/dashboard');
+            } else if (data.user.role === 'provider') {
+              router.push('/provider/dashboard');
+            } else {
+              setGeneralError('This account does not have admin access.');
+              logoutMutation.mutate();
+            }
+          },
+          onError: (error) => {
+            setGeneralError(error instanceof Error ? error.message : 'Login failed');
+          },
+        },
+      );
     }
   };
 
@@ -50,13 +75,19 @@ export default function AdminLoginPage() {
 
         <Card className="p-14 sm:p-16 lg:p-20 border-red-500/30">
           <form onSubmit={handleSubmit} className="space-y-10">
+            {generalError && (
+              <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {generalError}
+              </div>
+            )}
+
             <Input
-              label="Admin Username"
-              type="text"
-              placeholder="admin"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              error={errors.username}
+              label="Admin Email"
+              type="email"
+              placeholder="admin@example.com"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              error={errors.email}
             />
 
             <Input
@@ -76,8 +107,15 @@ export default function AdminLoginPage() {
               <span className="ml-4 text-base text-white/80">Remember me</span>
             </div>
 
-            <Button type="submit" fullWidth size="lg" variant="secondary" className="mt-12">
-              Sign In as Admin
+            <Button
+              type="submit"
+              fullWidth
+              size="lg"
+              variant="secondary"
+              className="mt-12"
+              disabled={loginMutation.isPending}
+            >
+              {loginMutation.isPending ? 'Signing In...' : 'Sign In as Admin'}
             </Button>
           </form>
 

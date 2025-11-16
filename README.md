@@ -46,6 +46,8 @@ Restart the dev server after adding or changing environment variables.
 | POST   | `/api/auth/login`      | Verifies credentials, issues session cookie. |
 | POST   | `/api/auth/logout`     | Clears the session cookie.                   |
 | GET    | `/api/auth/me`         | Returns the current authenticated user (401 otherwise). |
+- **Provider Portal**: `/provider/login` and `/provider/register` now hook into the same auth APIs (provider accounts remain pending until admin approval).
+- **Admin Portal**: `/admin/login` authenticates admins via the shared login endpoint and redirects to the admin dashboard.
 
 ## Local MongoDB Smoke Test
 
