@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useState } from 'react';
+import { AuthGuard } from '@/components/AuthGuard';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -17,7 +18,8 @@ export default function SettingsPage() {
   });
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
+    <AuthGuard allowedRoles={['admin']}>
+      <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
       <div className="mb-8 sm:mb-12">
         <Link href="/admin/dashboard" className="inline-flex items-center text-blue-300 hover:text-blue-400 mb-4 transition-colors">
           ← Back to Dashboard
@@ -150,7 +152,8 @@ export default function SettingsPage() {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
 

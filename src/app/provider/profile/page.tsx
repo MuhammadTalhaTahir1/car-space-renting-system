@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { AuthGuard } from '@/components/AuthGuard';
 
 export default function ProviderProfilePage() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,8 @@ export default function ProviderProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
+    <AuthGuard allowedRoles={['provider']}>
+      <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
       <div className="mb-8 sm:mb-12">
         <Link href="/provider/dashboard" className="inline-flex items-center text-blue-300 hover:text-blue-400 mb-4 transition-colors">
           ← Back to Dashboard
@@ -295,7 +297,8 @@ export default function ProviderProfilePage() {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
 

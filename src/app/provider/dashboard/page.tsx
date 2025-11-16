@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { AuthGuard } from '@/components/AuthGuard';
 
 // Mock data for provider dashboard
 const stats = {
@@ -53,7 +54,8 @@ export default function ProviderDashboard() {
   const [accountStatus, setAccountStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
+    <AuthGuard allowedRoles={['provider']}>
+      <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
       {/* Header Section */}
       <div className="mb-8 sm:mb-12">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -310,7 +312,8 @@ export default function ProviderDashboard() {
           </div>
         </Card>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
 
