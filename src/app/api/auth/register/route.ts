@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { hashPassword } from "@/lib/auth/password";
+import { createSessionResponse } from "@/lib/auth/session";
 import {
   createUser,
   ensureUserIndexes,
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json(
+    return createSessionResponse(
       {
         user: {
           id: createdUser._id.toString(),
