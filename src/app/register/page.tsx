@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { useRegister } from '@/features/auth/hooks';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,9 @@ export default function RegisterPage() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+  const router = useRouter();
+  const registerMutation = useRegister();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +40,24 @@ export default function RegisterPage() {
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      // Handle registration logic here
-      console.log('Register:', formData);
+      setGeneralError(null);
+      registerMutation.mutate(
+        {
+          fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          phone: formData.phone.trim(),
+          role: 'consumer',
+        },
+        {
+          onSuccess: () => {
+            router.push('/');
+          },
+          onError: (error) => {
+            setGeneralError(error instanceof Error ? error.message : 'Registration failed');
+          },
+        },
+      );
     }
   };
 
@@ -52,6 +73,11 @@ export default function RegisterPage() {
 
         <Card className="p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {generalError && (
+              <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {generalError}
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Input
                 label="First Name"
@@ -126,8 +152,8 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            <Button type="submit" fullWidth size="lg" className="mt-4">
-              Create Account
+            <Button type="submit" fullWidth size="lg" className="mt-4" disabled={registerMutation.isPending}>
+              {registerMutation.isPending ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
 
