@@ -20,17 +20,47 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Environment Setup
 
-To learn more about Next.js, take a look at the following resources:
+Create a `.env.local` in the project root with at least:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+# Optional: override the default database name (falls back to car-space-renting-system)
+MONGODB_DB=car-space-renting-system
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Restart the dev server after adding or changing environment variables.
 
-## Deploy on Vercel
+## Database Access Helpers
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/lib/db.ts` exposes `getMongoClient()` and `getDb()` so API routes reuse a single Mongo connection (hot-reload safe).
+- Data access lives in `src/lib/repositories/*`. The helpers perform typed CRUD operations and set indexes (e.g. unique user email).
+- Shared auth helpers are in `src/lib/auth/` for password hashing (`bcryptjs`) and setting/clearing the HTTP-only session cookie.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Auth API Endpoints
+
+| Method | Route                  | Description                                  |
+| ------ | ---------------------- | -------------------------------------------- |
+| POST   | `/api/auth/register`   | Creates consumer or provider users (auto-creates pending provider profile). |
+| POST   | `/api/auth/login`      | Verifies credentials, issues session cookie. |
+| POST   | `/api/auth/logout`     | Clears the session cookie.                   |
+| GET    | `/api/auth/me`         | Returns the current authenticated user (401 otherwise). |
+
+## Local MongoDB Smoke Test
+
+You can verify connectivity by temporarily adding an API route or using a REPL script:
+
+```ts
+import { getDb } from "@/lib/db";
+
+async function healthCheck() {
+  const db = await getDb();
+  console.log("MongoDB connected:", db.databaseName);
+  await db.admin().ping();
+}
+
+healthCheck();
+```
+
+Remove any temp code once you see the `"MongoDB connected"` message.
