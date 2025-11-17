@@ -108,7 +108,7 @@ export default function ProviderDashboard() {
       {/* Account Status Banner removed for approved */}
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6 mb-8 sm:mb-12">
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">🚗</div>
             <div className="text-xs sm:text-sm text-white/60">Total Spaces</div>
@@ -117,7 +117,7 @@ export default function ProviderDashboard() {
           <div className="text-xs text-blue-400">Active listings</div>
         </Card>
 
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">📅</div>
             <div className="text-xs sm:text-sm text-white/60">Active Bookings</div>
@@ -126,7 +126,7 @@ export default function ProviderDashboard() {
           <div className="text-xs text-green-400">This month</div>
         </Card>
 
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">💰</div>
             <div className="text-xs sm:text-sm text-white/60">Total Revenue</div>
@@ -135,7 +135,7 @@ export default function ProviderDashboard() {
           <div className="text-xs text-green-400">+18% from last month</div>
         </Card>
 
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">⏳</div>
             <div className="text-xs sm:text-sm text-white/60">Pending</div>
@@ -144,7 +144,7 @@ export default function ProviderDashboard() {
           <div className="text-xs text-yellow-400">Awaiting approval</div>
         </Card>
 
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">⭐</div>
             <div className="text-xs sm:text-sm text-white/60">Rating</div>
@@ -153,7 +153,7 @@ export default function ProviderDashboard() {
           <div className="text-xs text-yellow-400">{stats.totalReviews} reviews</div>
         </Card>
 
-        <Card hover className="p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-2xl sm:text-3xl">📊</div>
             <div className="text-xs sm:text-sm text-white/60">Occupancy</div>
@@ -169,7 +169,7 @@ export default function ProviderDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {quickActions.map((action, index) => (
             <Link key={index} href={action.href}>
-              <Card hover className="p-6 cursor-pointer" style={{
+              <Card className="p-6 cursor-pointer" style={{
                 borderColor: action.borderColor,
               }}>
                 <div className="flex items-start gap-4">
