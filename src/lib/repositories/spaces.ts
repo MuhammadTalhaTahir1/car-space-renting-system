@@ -24,6 +24,7 @@ export interface Space {
   capacity?: number;
   amenities?: string[];
   images?: string[];
+  providerBadge?: string;
   availabilityType: AvailabilityType;
   customAvailability?: Array<{
     day: string;
@@ -87,6 +88,16 @@ export async function listSpacesByProvider(providerId: ObjectId): Promise<WithId
 export async function listSpacesByStatus(status: SpaceStatus): Promise<WithId<Space>[]> {
   const db = await getDb();
   return db.collection<Space>(COLLECTION).find({ status }).sort({ createdAt: 1 }).toArray();
+}
+
+export async function listPublicSpaces(): Promise<WithId<Space>[]> {
+  const db = await getDb();
+  return db
+    .collection<Space>(COLLECTION)
+    .find({ status: 'approved', isActive: true })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .toArray();
 }
 
 export async function findSpaceById(spaceId: string): Promise<WithId<Space> | null> {
