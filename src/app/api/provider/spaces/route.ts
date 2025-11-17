@@ -50,6 +50,7 @@ type SpaceSummary = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  images: string[];
 };
 
 function requireProviderSession(request: Request): { providerId: ObjectId } | ApiResponse<never> {
@@ -79,6 +80,7 @@ function serializeSpace(space: Space): SpaceSummary {
     isActive: space.isActive,
     createdAt: space.createdAt.toISOString(),
     updatedAt: space.updatedAt.toISOString(),
+    images: space.images ?? [],
   };
 }
 
@@ -137,7 +139,7 @@ export async function POST(request: Request): Promise<ApiResponse<SpaceSummary>>
       currency: payload.currency ?? 'AUD',
       capacity: payload.capacity,
       amenities: payload.amenities,
-      images: payload.images,
+      images: payload.images ?? [],
       availabilityType: payload.availabilityType ?? '24_7',
       customAvailability: payload.customAvailability,
       isActive: payload.isActive ?? false,

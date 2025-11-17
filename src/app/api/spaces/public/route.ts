@@ -22,6 +22,7 @@ export async function GET() {
       ratingAverage: space.ratingAverage ?? 0,
       ratingCount: space.ratingCount ?? 0,
       createdAt: space.createdAt.toISOString(),
+      images: space.images ?? [],
     }));
 
     return NextResponse.json({ spaces: payload });

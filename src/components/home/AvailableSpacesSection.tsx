@@ -71,9 +71,11 @@ export default function AvailableSpacesSection() {
                   city={space.city}
                   state={space.state}
                   amenities={space.amenities}
+                  image={space.images?.[0]}
                   providerBadge={space.providerBadge}
                   ratingAverage={space.ratingAverage}
                   ratingCount={space.ratingCount}
+                  isActive
                 />
               </div>
             ))}

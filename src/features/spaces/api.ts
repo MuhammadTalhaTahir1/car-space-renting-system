@@ -18,6 +18,7 @@ export type PublicSpace = {
   ratingAverage: number;
   ratingCount: number;
   createdAt: string;
+  images: string[];
 };
 
 type PublicSpacesResponse = {

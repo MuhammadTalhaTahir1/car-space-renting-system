@@ -74,6 +74,7 @@ type ProviderSpaceSummary = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  images: string[];
 };
 
 type ProviderSpaceResponse = {
