@@ -1,80 +1,33 @@
-import SpaceCard from '@/components/ui/SpaceCard';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Link from 'next/link';
-
-// Mock data for car spaces
-const mockSpaces = [
-  {
-    id: '1',
-    location: 'Downtown Central',
-    price: 5,
-    description: 'Secure covered parking space in the heart of downtown. 24/7 access with CCTV monitoring.',
-    available: true,
-  },
-  {
-    id: '2',
-    location: 'Shopping Mall Parking',
-    price: 3,
-    description: 'Convenient parking near shopping district. Perfect for day visitors and shoppers.',
-    available: true,
-  },
-  {
-    id: '3',
-    location: 'Airport Terminal',
-    price: 8,
-    description: 'Premium parking space near airport terminal. Ideal for travelers and airport staff.',
-    available: true,
-  },
-  {
-    id: '4',
-    location: 'Residential Area',
-    price: 4,
-    description: 'Spacious parking in quiet residential neighborhood. Long-term rental available.',
-    available: false,
-  },
-  {
-    id: '5',
-    location: 'Business District',
-    price: 6,
-    description: 'Prime location in business district. Close to offices and restaurants.',
-    available: true,
-  },
-  {
-    id: '6',
-    location: 'Sports Stadium',
-    price: 10,
-    description: 'Event parking near sports stadium. Perfect for game days and concerts.',
-    available: true,
-  },
-];
+import AvailableSpacesSection from '@/components/home/AvailableSpacesSection';
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(17, 24, 39, 0.25) 50%, rgba(15, 23, 42, 0.2) 100%)',
-        }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(17, 24, 39, 0.25) 50%, rgba(15, 23, 42, 0.2) 100%)',
+          }}
+        ></div>
         <div className="relative w-full text-center">
           <div className="animate-fade-in-up">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Find Your Perfect
               <br />
-              <span style={{ color: '#ffffff' }}>
-                Parking Space
-              </span>
+              <span style={{ color: '#ffffff' }}>Parking Space</span>
             </h1>
             <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover convenient and affordable parking spaces across the city. 
-              Book instantly and park with confidence.
+              Discover convenient and affordable parking spaces across the city. Book instantly and park with confidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/register">
-                <Button size="lg" >
-                  Get Started Free
-                </Button>
+                <Button size="lg">Get Started Free</Button>
               </Link>
               <Link href="/login">
                 <Button variant="outline" size="lg">
@@ -102,17 +55,20 @@ export default function Home() {
               {
                 icon: '🔒',
                 title: 'Secure & Safe',
-                description: 'All spaces are verified and monitored for your safety. Advanced security measures ensure peace of mind.',
+                description:
+                  'All spaces are verified and monitored for your safety. Advanced security measures ensure peace of mind.',
               },
               {
                 icon: '💰',
                 title: 'Affordable Rates',
-                description: 'Competitive prices with flexible payment options. Find the perfect space that fits your budget.',
+                description:
+                  'Competitive prices with flexible payment options. Find the perfect space that fits your budget.',
               },
               {
                 icon: '⚡',
                 title: 'Instant Booking',
-                description: 'Book your space in seconds, no waiting required. Real-time availability updates keep you informed.',
+                description:
+                  'Book your space in seconds, no waiting required. Real-time availability updates keep you informed.',
               },
             ].map((feature, index) => (
               <Card key={index} hover className="p-6 text-center">
@@ -125,43 +81,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Available Spaces Section */}
-      <section className="py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full" style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0.03) 100%)',
-      }}>
-        <div className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
-                Available Spaces
-              </h2>
-              <p className="text-base sm:text-lg text-white/70">
-                {mockSpaces.filter(s => s.available).length} spaces available now
-              </p>
-            </div>
-          </div>
-          <div style={{
-            display: 'flex',
-            gap: '1rem',
-            overflowX: 'auto',
-            paddingBottom: '1rem',
-            scrollbarWidth: 'thin',
-          }} className="scrollbar-hide">
-            {mockSpaces.map((space) => (
-              <div key={space.id} style={{ minWidth: '320px', flexShrink: 0 }}>
-                <SpaceCard {...space} />
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link href="/register">
-              <Button variant="secondary" size="lg">
-                View All Spaces
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <AvailableSpacesSection />
 
       {/* CTA Section */}
       <section className="py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
