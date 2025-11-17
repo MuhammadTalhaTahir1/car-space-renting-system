@@ -2,11 +2,7 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
 import { getSessionFromRequest } from '@/lib/auth/session';
-import {
-  findSpaceById,
-  updateSpace,
-  Space,
-} from '@/lib/repositories/spaces';
+import { findSpaceById, updateSpace, Space } from '@/lib/repositories/spaces';
 
 type SessionPayload = {
   user?: {

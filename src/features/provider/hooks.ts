@@ -8,9 +8,11 @@ import {
   fetchProviderSpaces,
   createProviderSpace,
   updateProviderSpace,
+  toggleProviderSpaceActivation,
   ProviderProfile,
   ProviderSpace,
   ProviderSpaceSummary,
+  ToggleSpaceActivationPayload,
 } from './api';
 
 const PROVIDER_PROFILE_QUERY_KEY = ['provider-profile'];
@@ -71,6 +73,20 @@ export function useUpdateProviderSpace() {
       const spaceId = data?.data?.id ?? variables.id;
       if (spaceId) {
         queryClient.invalidateQueries({ queryKey: providerSpaceKey(spaceId) });
+      }
+    },
+  });
+}
+
+export function useToggleProviderSpaceActivation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ToggleSpaceActivationPayload) => toggleProviderSpaceActivation(payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: PROVIDER_SPACES_QUERY_KEY });
+      if (variables.spaceId) {
+        queryClient.invalidateQueries({ queryKey: providerSpaceKey(variables.spaceId) });
       }
     },
   });

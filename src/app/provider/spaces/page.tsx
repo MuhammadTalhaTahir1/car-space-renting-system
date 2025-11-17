@@ -7,7 +7,11 @@ import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { AuthGuard } from '@/components/AuthGuard';
-import { useProviderProfile, useProviderSpaces } from '@/features/provider/hooks';
+import {
+  useProviderProfile,
+  useProviderSpaces,
+  useToggleProviderSpaceActivation,
+} from '@/features/provider/hooks';
 import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
 import { useLogout } from '@/features/auth/hooks';
 import type { ProviderSpaceSummary } from '@/features/provider/api';
@@ -69,6 +73,7 @@ export default function SpacesPage() {
   const { data, isLoading, isError } = useProviderProfile();
   const spacesQuery = useProviderSpaces();
   const logoutMutation = useLogout();
+  const toggleActivation = useToggleProviderSpaceActivation();
 
   const status = data?.profile.status;
   const spaces = spacesQuery.data ?? [];
@@ -230,12 +235,22 @@ export default function SpacesPage() {
                                 ? 'rgba(239, 68, 68, 0.3)'
                                 : 'rgba(34, 197, 94, 0.3)'
                             }`,
-                            opacity: 0.6,
-                            cursor: 'not-allowed',
+                            opacity: toggleActivation.isPending ? 0.6 : 1,
+                            cursor: toggleActivation.isPending ? 'wait' : 'pointer',
                           }}
-                          title="Activation toggles coming soon"
+                          disabled={toggleActivation.isPending}
+                          onClick={() =>
+                            toggleActivation.mutate({
+                              spaceId: space.id,
+                              isActive: !space.isActive,
+                            })
+                          }
                         >
-                          {space.isActive ? 'Deactivate' : 'Activate'}
+                          {toggleActivation.isPending
+                            ? 'Processing...'
+                            : space.isActive
+                            ? 'Deactivate'
+                            : 'Activate'}
                         </button>
                       </div>
                     </Card>

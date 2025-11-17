@@ -12,6 +12,7 @@ import {
   useProviderProfile,
   useProviderSpace,
   useUpdateProviderSpace,
+  useToggleProviderSpaceActivation,
 } from '@/features/provider/hooks';
 import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
 import { useLogout } from '@/features/auth/hooks';
@@ -85,6 +86,7 @@ export default function EditSpacePage() {
   const logoutMutation = useLogout();
   const updateSpaceMutation = useUpdateProviderSpace();
   const spaceQuery = useProviderSpace(spaceId);
+  const toggleActivation = useToggleProviderSpaceActivation();
 
   const status = data?.profile.status;
   const space = spaceQuery.data;
@@ -370,8 +372,21 @@ export default function EditSpacePage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-white/70">Activation</span>
-                      <span className="text-sm font-bold text-white">
+                      <span className="text-sm font-bold text-white flex items-center gap-2">
                         {space.isActive ? 'Active' : 'Inactive'}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={toggleActivation.isPending}
+                          onClick={() =>
+                            toggleActivation.mutate({
+                              spaceId: space.id,
+                              isActive: !space.isActive,
+                            })
+                          }
+                        >
+                          {toggleActivation.isPending ? 'Updating...' : space.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -393,15 +408,25 @@ export default function EditSpacePage() {
                     <Button
                       variant="outline"
                       fullWidth
-                      disabled
+                      onClick={() =>
+                        toggleActivation.mutate({
+                          spaceId: space.id,
+                          isActive: !space.isActive,
+                        })
+                      }
+                      disabled={toggleActivation.isPending}
                       style={{
                         background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%)',
                         borderColor: 'rgba(239, 68, 68, 0.3)',
                         color: '#fca5a5',
-                        opacity: 0.6,
+                        opacity: toggleActivation.isPending ? 0.6 : 1,
                       }}
                     >
-                      Deactivate Space (coming soon)
+                      {toggleActivation.isPending
+                        ? 'Updating...'
+                        : space.isActive
+                        ? 'Deactivate Space'
+                        : 'Activate Space'}
                     </Button>
                     <Button
                       variant='outline'

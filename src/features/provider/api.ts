@@ -104,6 +104,11 @@ type UpdateProviderSpacePayload = CreateProviderSpacePayload & {
   id: string;
 };
 
+export type ToggleSpaceActivationPayload = {
+  spaceId: string;
+  isActive: boolean;
+};
+
 export function fetchProviderProfile() {
   return apiFetch<ProviderProfileResponse>('/api/provider/profile');
 }
@@ -128,6 +133,13 @@ export function updateProviderSpace(payload: UpdateProviderSpacePayload) {
   return apiFetch<ProviderSpaceResponse>(`/api/provider/spaces/${id}`, {
     method: 'PATCH',
     body,
+  });
+}
+
+export function toggleProviderSpaceActivation({ spaceId, isActive }: ToggleSpaceActivationPayload) {
+  return apiFetch<{ success: boolean }>(`/api/provider/spaces/${spaceId}/activate`, {
+    method: 'POST',
+    body: { isActive },
   });
 }
 
