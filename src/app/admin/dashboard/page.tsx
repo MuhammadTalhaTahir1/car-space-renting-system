@@ -103,12 +103,16 @@ export default function AdminDashboard() {
         </Card>
 
         <Card hover className="p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl sm:text-3xl">🚗</div>
-            <div className="text-xs sm:text-sm text-white/60">Spaces</div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stats.totalSpaces}</div>
-          <div className="text-xs text-green-400">+8% from last month</div>
+          <Link href="/admin/spaces/pending" className="block">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-2xl sm:text-3xl">🚗</div>
+              <div className="text-xs sm:text-sm text-white/60">Spaces</div>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{stats.totalSpaces}</div>
+            <div className="text-xs text-yellow-400">
+              Review pending spaces →
+            </div>
+          </Link>
         </Card>
 
         <Card hover className="p-4 sm:p-6">
