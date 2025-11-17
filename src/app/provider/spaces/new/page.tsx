@@ -11,6 +11,7 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { useProviderProfile, useCreateProviderSpace } from '@/features/provider/hooks';
 import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
 import { useLogout } from '@/features/auth/hooks';
+import SpaceImageUploader from '@/components/provider/SpaceImageUploader';
 
 const amenityOptions = [
   'Covered',
@@ -42,6 +43,7 @@ type NewSpaceFormState = {
   capacity: string;
   amenities: string[];
   availability: AvailabilityOption;
+  images: string[];
 };
 
 function mapAvailability(value: AvailabilityOption) {
@@ -67,6 +69,7 @@ export default function NewSpacePage() {
     capacity: '1',
     amenities: [],
     availability: '24/7',
+    images: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -102,6 +105,7 @@ export default function NewSpacePage() {
       newErrors.price = 'Hourly price must be a number';
     }
     if (!formData.description.trim()) newErrors.description = 'Description is required';
+    if (formData.images.length < 2) newErrors.images = 'Please upload at least two photos of your space';
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -123,7 +127,7 @@ export default function NewSpacePage() {
         availabilityType: mapAvailability(formData.availability),
         // Future: capture custom hours (for now rely on availabilityType)
         customAvailability: undefined,
-        images: [],
+        images: formData.images,
         isActive: false,
       },
       {
@@ -306,6 +310,16 @@ export default function NewSpacePage() {
                       );
                     })}
                   </div>
+                </Card>
+
+                <Card className="p-6">
+                  <SpaceImageUploader
+                    images={formData.images}
+                    onChange={(urls) => setFormData((prev) => ({ ...prev, images: urls }))}
+                  />
+                  {errors.images && (
+                    <p className="text-xs text-red-300 mt-2">{errors.images}</p>
+                  )}
                 </Card>
 
                 <div className="flex gap-4">

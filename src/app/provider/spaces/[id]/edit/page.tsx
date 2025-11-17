@@ -16,6 +16,7 @@ import {
 } from '@/features/provider/hooks';
 import { ProviderPendingNotice } from '@/components/ProviderPendingNotice';
 import { useLogout } from '@/features/auth/hooks';
+import SpaceImageUploader from '@/components/provider/SpaceImageUploader';
 
 const amenityOptions = [
   'Covered',
@@ -61,6 +62,7 @@ type EditFormState = {
   capacity: string;
   amenities: string[];
   availability: AvailabilityOption;
+  images: string[];
 };
 
 export default function EditSpacePage() {
@@ -78,6 +80,7 @@ export default function EditSpacePage() {
     capacity: '1',
     amenities: [],
     availability: '24/7',
+    images: [],
   });
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -104,6 +107,7 @@ export default function EditSpacePage() {
         capacity: space.capacity?.toString() ?? '1',
         amenities: space.amenities ?? [],
         availability: toFormAvailability(space.availabilityType),
+        images: space.images ?? [],
       });
     }
   }, [space]);
@@ -138,7 +142,7 @@ export default function EditSpacePage() {
         capacity: formData.capacity ? Number(formData.capacity) : undefined,
         amenities: formData.amenities,
         availabilityType: toApiAvailability(formData.availability),
-        images: space?.images ?? [],
+        images: formData.images,
         isActive: space?.isActive ?? false,
       },
       {
@@ -320,6 +324,13 @@ export default function EditSpacePage() {
                       );
                     })}
                   </div>
+                </Card>
+
+                <Card className="p-6">
+                  <SpaceImageUploader
+                    images={formData.images}
+                    onChange={(urls) => setFormData((prev) => ({ ...prev, images: urls }))}
+                  />
                 </Card>
 
                 <div className="flex gap-4">
