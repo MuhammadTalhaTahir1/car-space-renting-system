@@ -92,7 +92,9 @@ export async function GET(
       return NextResponse.json({ error: 'Space not found' }, { status: 404 });
     }
 
-    const providerUser = await findUserById(space.providerId);
+    const providerIdString = space.providerId.toString();
+
+    const providerUser = await findUserById(providerIdString);
     const providerProfile = await findProviderProfileByUserId(space.providerId);
 
     return NextResponse.json({
