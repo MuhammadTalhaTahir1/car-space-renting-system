@@ -41,9 +41,17 @@ function SpaceCard({ entry }: { entry: PendingSpace }) {
               .join(', ') || 'Location not provided'}
           </p>
         </div>
-        <span className="text-xs text-yellow-300 bg-yellow-500/20 border border-yellow-400/30 px-3 py-1 rounded-full">
-          Submitted {new Date(entry.space.createdAt).toLocaleString('en-AU')}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className="text-xs text-yellow-300 bg-yellow-500/20 border border-yellow-400/30 px-3 py-1 rounded-full">
+            Submitted {new Date(entry.space.createdAt).toLocaleString('en-AU')}
+          </span>
+          <Link
+            href={`/admin/spaces/pending/${entry.space.id}`}
+            className="text-xs uppercase tracking-wide text-blue-200 hover:text-blue-100"
+          >
+            View details →
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-white/80">
