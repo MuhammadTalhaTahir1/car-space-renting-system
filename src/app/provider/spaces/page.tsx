@@ -235,14 +235,19 @@ export default function SpacesPage() {
                         </div>
                       </div>
 
-                      <div className="flex gap-6 pt-4 border-t border-white/10">
-                        <Link href={`/provider/spaces/${space.id}/edit`} className="flex-1">
+                      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
+                        <Link href={`/provider/spaces/${space.id}`} className="sm:flex-1">
+                          <Button variant="outline" fullWidth size="sm">
+                            View Details
+                          </Button>
+                        </Link>
+                        <Link href={`/provider/spaces/${space.id}/edit`} className="sm:flex-1">
                           <Button variant="outline" fullWidth size="sm">
                             Edit
                           </Button>
                         </Link>
                         <button
-                          className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all"
+                          className="sm:flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all"
                           style={{
                             background: space.isActive
                               ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.2) 100%)'
