@@ -76,6 +76,7 @@ export default function AvailableSpacesSection() {
                   ratingAverage={space.ratingAverage}
                   ratingCount={space.ratingCount}
                   isActive
+                  href={`/spaces/${space.id}`}
                 />
               </div>
             ))}
@@ -91,9 +92,9 @@ export default function AvailableSpacesSection() {
         )}
 
         <div className="text-center mt-8">
-          <Link href="/register">
+          <Link href="/spaces">
             <Button variant="secondary" size="lg">
-              View All Spaces
+              Browse All Spaces
             </Button>
           </Link>
         </div>

@@ -21,10 +21,32 @@ export type PublicSpace = {
   images: string[];
 };
 
+export type PublicSpaceDetail = PublicSpace & {
+  state?: string;
+  zipCode?: string;
+  dailyRate?: number | null;
+  capacity?: number | null;
+  availabilityType: '24_7' | 'custom' | 'business_hours';
+  customAvailability: Array<{
+    day: string;
+    startTime: string;
+    endTime: string;
+  }>;
+  updatedAt: string;
+};
+
 type PublicSpacesResponse = {
   spaces: PublicSpace[];
 };
 
+type PublicSpaceResponse = {
+  space: PublicSpaceDetail;
+};
+
 export function fetchPublicSpaces() {
   return apiFetch<PublicSpacesResponse>('/api/spaces/public');
+}
+
+export function fetchPublicSpace(spaceId: string) {
+  return apiFetch<PublicSpaceResponse>(`/api/spaces/${spaceId}`);
 }

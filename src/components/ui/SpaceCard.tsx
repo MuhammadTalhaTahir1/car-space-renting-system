@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import Card from './Card';
 import Button from './Button';
 import Image from 'next/image';
@@ -19,6 +21,8 @@ interface SpaceCardProps {
   providerBadge?: string | null;
   ratingAverage?: number;
   ratingCount?: number;
+  href?: string;
+  ctaLabel?: string;
 }
 
 function formatCurrency(value: number, currency: string) {
@@ -47,6 +51,8 @@ export default function SpaceCard({
   providerBadge,
   ratingAverage,
   ratingCount,
+  href,
+  ctaLabel = 'View Details',
 }: SpaceCardProps) {
   const location = [address, city, state].filter(Boolean).join(', ');
 
@@ -229,9 +235,17 @@ export default function SpaceCard({
             ) : (
               <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.75rem' }}>No reviews yet</p>
             )}
-            <Button variant="outline" size="sm" className="mt-2">
-              View Details
-            </Button>
+            {href ? (
+              <Link href={href}>
+                <Button variant="outline" size="sm" className="mt-2">
+                  {ctaLabel}
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="outline" size="sm" className="mt-2">
+                {ctaLabel}
+              </Button>
+            )}
           </div>
         </div>
 

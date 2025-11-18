@@ -105,6 +105,13 @@ export async function findSpaceById(spaceId: string): Promise<WithId<Space> | nu
   return db.collection<Space>(COLLECTION).findOne({ _id: new ObjectId(spaceId) });
 }
 
+export async function findPublicSpaceById(spaceId: string): Promise<WithId<Space> | null> {
+  const db = await getDb();
+  return db
+    .collection<Space>(COLLECTION)
+    .findOne({ _id: new ObjectId(spaceId), status: 'approved', isActive: true });
+}
+
 export async function updateSpace(spaceId: string, updates: Partial<Omit<Space, '_id' | 'createdAt'>>): Promise<void> {
   const db = await getDb();
   const updateDoc: Record<string, unknown> = {
