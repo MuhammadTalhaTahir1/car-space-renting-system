@@ -41,7 +41,9 @@ export default function AvailableSpacesSection() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Card key={index} className="p-6 animate-pulse border-white/10 bg-white/5" />
+            <Card key={index} className="p-6 border-white/10 bg-white/5">
+              <div className="w-full h-32 animate-pulse bg-white/10 rounded-lg" />
+            </Card>
             ))}
           </div>
         ) : isError ? (

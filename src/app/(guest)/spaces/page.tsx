@@ -28,7 +28,9 @@ export default function PublicSpacesPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="p-6 border-white/10 bg-white/5 animate-pulse h-72" />
+            <Card key={index} className="p-6 border-white/10 bg-white/5 h-72">
+              <div className="w-full h-full animate-pulse bg-white/10 rounded-lg" />
+            </Card>
           ))}
         </div>
       ) : isError ? (
