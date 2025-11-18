@@ -8,6 +8,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { usePublicSpace } from '@/features/spaces/hooks';
+import { useCurrentUser } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 function formatCurrency(value: number | null | undefined, currency: string) {
   if (typeof value !== 'number') {
@@ -29,6 +31,8 @@ function PublicSpaceDetailContent({ spaceId }: { spaceId: string }) {
   const router = useRouter();
   const { data: space, isLoading, isError } = usePublicSpace(spaceId);
   const [currentImage, setCurrentImage] = useState(0);
+  useCurrentUser();
+  const { isAuthenticated } = useAuthStore();
 
   if (!spaceId) {
     return (
@@ -216,22 +220,24 @@ function PublicSpaceDetailContent({ spaceId }: { spaceId: string }) {
         </Card>
 
         <div className="space-y-6">
-          <Card className="p-6 border-white/10 bg-white/5 space-y-4">
-            <h2 className="text-xl font-semibold text-white">Ready to reserve?</h2>
-            <p className="text-sm text-white/70">
-              Booking is coming soon. Create an account to stay updated when reservations open for this space.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/register" className="flex-1">
-                <Button fullWidth>Register</Button>
-              </Link>
-              <Link href="/login" className="flex-1">
-                <Button variant="outline" fullWidth>
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </Card>
+          {!isAuthenticated && (
+            <Card className="p-6 border-white/10 bg-white/5 space-y-4">
+              <h2 className="text-xl font-semibold text-white">Ready to reserve?</h2>
+              <p className="text-sm text-white/70">
+                Booking is coming soon. Create an account to stay updated when reservations open for this space.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/register" className="flex-1">
+                  <Button fullWidth>Register</Button>
+                </Link>
+                <Link href="/login" className="flex-1">
+                  <Button variant="outline" fullWidth>
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          )}
 
           <Card className="p-6 border-white/10 bg-white/5 space-y-2 text-sm text-white/70">
             <div>

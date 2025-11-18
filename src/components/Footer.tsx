@@ -1,8 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useCurrentUser } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Footer() {
+  useCurrentUser();
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <footer className="w-full border-t shadow-md mt-16" style={{
       background: 'linear-gradient(135deg, rgba(0, 0, 0, 1) 0%, rgba(17, 24, 39, 0.95) 50%, rgba(15, 23, 42, 0.9) 100%)',
@@ -101,11 +106,13 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link href="/register" className="text-gray-300 hover:text-blue-300 transition-colors text-sm font-medium inline-block">
-                  Register
-                </Link>
-              </li>
+              {!isAuthenticated && (
+                <li>
+                  <Link href="/register" className="text-gray-300 hover:text-blue-300 transition-colors text-sm font-medium inline-block">
+                    Register
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -113,21 +120,31 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-base mb-4" style={{ color: '#ffffff' }}>Account</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/login" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Link href="/register" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
-                  Sign Up
-                </Link>
-              </li>
-              <li>
-                <Link href="/provider/register" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
-                  Become a Provider
-                </Link>
-              </li>
+              {!isAuthenticated ? (
+                <>
+                  <li>
+                    <Link href="/login" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/register" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                      Sign Up
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/provider/register" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                      Become a Provider
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link href="/provider/register" className="text-gray-300 transition-colors text-sm font-medium inline-block" onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                    Become a Provider
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

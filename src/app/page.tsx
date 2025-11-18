@@ -1,9 +1,18 @@
+'use client';
+
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Link from 'next/link';
 import AvailableSpacesSection from '@/components/home/AvailableSpacesSection';
+import { useCurrentUser } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Home() {
+  useCurrentUser();
+  const { isAuthenticated, user } = useAuthStore();
+  const isProvider = user?.role === 'provider';
+  const isAdmin = user?.role === 'admin';
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -25,16 +34,37 @@ export default function Home() {
             <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
               Discover convenient and affordable parking spaces across the city. Book instantly and park with confidence.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/register">
-                <Button size="lg">Get Started Free</Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="lg">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
+            {!isAuthenticated && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/register">
+                  <Button size="lg">Get Started Free</Button>
+                </Link>
+                <Link href="/login">
+                  <Button variant="outline" size="lg">
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            )}
+            {isProvider && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/provider/dashboard">
+                  <Button size="lg">View Dashboard</Button>
+                </Link>
+                <Link href="/provider/spaces">
+                  <Button variant="outline" size="lg">
+                    View Spaces
+                  </Button>
+                </Link>
+              </div>
+            )}
+            {isAdmin && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/admin/dashboard">
+                  <Button size="lg">View Dashboard</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -94,11 +124,13 @@ export default function Home() {
               Join thousands of users who are already using ParkSpace to find and rent parking spaces.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button size="lg" style={{ padding: '0.875rem 1.75rem' }}>
-                  Create Account
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/register">
+                  <Button size="lg" style={{ padding: '0.875rem 1.75rem' }}>
+                    Create Account
+                  </Button>
+                </Link>
+              )}
               <Link href="/contact">
                 <Button variant="outline" size="lg" style={{ padding: '0.875rem 1.75rem' }}>
                   Contact Us

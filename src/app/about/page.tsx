@@ -1,8 +1,14 @@
+'use client';
+
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
+import { useCurrentUser } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function AboutPage() {
+  useCurrentUser();
+  const { isAuthenticated } = useAuthStore();
   const features = [
     {
       icon: '🎯',
@@ -111,11 +117,13 @@ export default function AboutPage() {
               parking experience better.
             </p>
             <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="min-w-[320px] px-12 py-6 text-xl">
-                  Get Started
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/register">
+                  <Button size="lg" className="min-w-[320px] px-12 py-6 text-xl">
+                    Get Started
+                  </Button>
+                </Link>
+              )}
               <Link href="/contact">
                 <Button variant="outline" size="lg" className="min-w-[320px] px-12 py-6 text-xl">
                   Contact Us

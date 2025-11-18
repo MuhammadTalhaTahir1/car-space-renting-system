@@ -6,10 +6,14 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import SpaceCard from '@/components/ui/SpaceCard';
 import { usePublicSpaces } from '@/features/spaces/hooks';
+import { useCurrentUser } from '@/features/auth/hooks';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function PublicSpacesPage() {
   const { data, isLoading, isError } = usePublicSpaces();
   const spaces = data ?? [];
+  useCurrentUser();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <div className="min-h-screen py-12 lg:py-16 px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full">
@@ -59,11 +63,13 @@ export default function PublicSpacesPage() {
           <div className="text-5xl mb-4">🚗</div>
           <h2 className="text-2xl font-bold text-white mb-2">No spaces available yet</h2>
           <p className="text-white/70 mb-6">
-            New parking spaces are added regularly. Create an account to get notified when new listings appear.
+            New parking spaces are added regularly. {!isAuthenticated && 'Create an account to get notified when new listings appear.'}
           </p>
-          <Link href="/register">
-            <Button variant="secondary">Create a free account</Button>
-          </Link>
+          {!isAuthenticated && (
+            <Link href="/register">
+              <Button variant="secondary">Create a free account</Button>
+            </Link>
+          )}
         </Card>
       )}
     </div>
