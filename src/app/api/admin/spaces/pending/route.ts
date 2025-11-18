@@ -76,7 +76,9 @@ export async function GET(request: Request): Promise<NextResponse<PendingSpaceRe
 
     const spacesWithProvider = await Promise.all(
       pendingSpaces.map(async (space) => {
-        const providerUser = await findUserById(space.providerId);
+        const providerIdString = space.providerId.toString();
+
+        const providerUser = await findUserById(providerIdString);
         const providerProfile = await findProviderProfileByUserId(space.providerId);
 
         return {
